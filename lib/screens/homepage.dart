@@ -1,12 +1,20 @@
 import 'package:anveshana/controllers/database_controller.dart';
 import 'package:anveshana/models/startup_post.dart';
+import 'package:anveshana/screens/Auth/login.dart';
+import 'package:anveshana/screens/Auth/otp.dart';
+import 'package:anveshana/screens/post_screen.dart';
+import 'package:anveshana/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'Auth/signup.dart';
+import 'home_screen.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
   @override
   State<HomePage> createState() => _stateExampleState();
 }
@@ -14,105 +22,70 @@ class HomePage extends StatefulWidget {
 // ignore: camel_case_types
 class _stateExampleState extends State<HomePage> {
 
-  var Post = post(
-      StartUpName: "Raghu tech",
-      Founder: "Hemanth Srinivas",
-      CoFounder:"Vivek", TeamSize:4 ,
-      StartUpDescription:"An app which helps ",
-      USP: "Android Application",
-      investment: 1000,
-      Location:"Visakhapatanam",
-      EstDate: "2022"
-  );
+  int currentIndex = 0;
+
+  var Tabs = [
+    Home(),
+    PhoneAuthScreen(),
+    ProfilePage(),
+  ];
+
+
   @override
   void initState() {
     super.initState();
-    print("Started");
-    createPost(Post);
+    /*final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUse
+    final uid = user?.uid;
+
+    try{
+      await FirebaseFirestore.instance.collection("users").doc(uid).set({
+        "Name":Name,
+        "Phone": countrycode.text + PhoneNumber,
+        "id": Uid.toString(),
+      });
+    }catch(e){
+      print(e.toString());
+      print("Cannot Create User !!!!");
+    }*/
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                        child: Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            border:Border.all(color: Colors.grey.shade300,width: 1),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child:Text("Anveshana",style: TextStyle(fontSize: 25),) ,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                                    border:Border.all(color: Colors.grey.shade300,width: 1),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                    )
-                  ],
-                ),
-                SizedBox(height: 8,),
-        Container(
-          height: 50,
-          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(top:5),
-                  //width: 395,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey[200],
-                  ),
-                  child: const TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search ,color:Colors.grey,),
-                      border: InputBorder.none,
-                      hintText: "Search",
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ),
-
-            ],
+      bottomNavigationBar: CurvedNavigationBar(
+        height: 60,
+        index: currentIndex,
+        backgroundColor: Colors.white,
+        color: Colors.black,
+        animationDuration: Duration(milliseconds: 300),
+        items: const [
+          Icon(
+            Icons.home,
+            color:Colors.white,
+            size: 30,
           ),
-        ),
-                SizedBox(height: 10,),
+          Icon(
+            Icons.add,
+            color:Colors.white,
+            size: 30,
+          ),
+          Icon(
+            Icons.person,
+            color:Colors.white,
+            size: 30,
 
-                Container(
-                  height: 600,
-                  child: fetchData(),
-                ),
-
-
-              ],
-            ),
-          )
-        ),
+          ),
+        ],
+        onTap: (index){
+          setState(() {
+            currentIndex = index;
+          });
+        },
+      ),
+      body: SafeArea(
+        child:Tabs[currentIndex],
       ),
     );
   }
@@ -122,11 +95,10 @@ class _stateExampleState extends State<HomePage> {
 
 
 
-
 Widget fetchData(){
   return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection("startup")
+          .collection("posts")
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
         if(snapshot.hasError){
@@ -143,82 +115,17 @@ Widget fetchData(){
         if(snapshot != null && snapshot.data != null){
 
           return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
+            //scrollDirection: Axis.vertical,
+            itemCount: 10,//snapshot.data!.docs.length,
             itemBuilder: (context,index){
               return Container(
-                margin: EdgeInsets.only(bottom: 5),
-                height: 170,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 160,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey.shade200,
-                      ),
-                      child: Column(
-
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 10,top:10),
-                                child: Text(snapshot.data!.docs[index]['StartUpName'],style: TextStyle(fontSize: 18,fontWeight: FontWeight.normal),),
-                              ),
-                              SizedBox(width: 90,),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 20,
-                                  width: 80,
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade100,
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Text(snapshot.data!.docs[index]['Investment'].toString() + " Rs"),
-                                ),
-                              ),
-
-                            ],
-                          ),
-                          SizedBox(height: 0,),
-                          Padding(padding: EdgeInsets.only(top:10,left:10),
-                            child: Row(
-
-                              children: [
-                                Text("Founder",style: TextStyle(fontSize: 15),),
-                                SizedBox(width: 5,),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: 50,
-                                  height: 15,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade100,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(snapshot.data!.docs[index]['Name'],style: TextStyle(fontSize: 12),),
-                                )
-                              ],
-                            )
-                          )
-
-                        ],
-                      ),
-                    )
-                  ],
-                )
-
-
+                height: 100,
+                color: Colors.black,
               );
             },
           );
         }
-
+        //Text(snapshot.data!.docs[index]['Name'],style: TextStyle(fontSize: 12),),
         return Container();
 
       }
@@ -228,24 +135,7 @@ Widget fetchData(){
 //Card(color:Colors.grey,child: ListTile(title: Text(snapshot.data!.docs[index]['Name']),),);
 
 
-void createPost(Post) async{
-  var check=0;
-  try{
-    await FirebaseFirestore.instance.collection("startup").doc().set({
-      "StartUpName":Post.StartUpName,
-      "Founder":Post.CoFounder,
-      "CoFounder":Post.CoFounder,
-      "StartUpDescription":Post.StartUpDescription,
-      "USP":Post.USP,
-      "Investment":Post.investment,
-      "Location":Post.Location,
-      "Established":Post.EstDate,
-      "Name":"Bosdamon",
-    });
-    check=1;
-  }catch(e){
-    print(e.toString());
-    print("cannot make it !!!");
-  }
-  if(check==1) print("Successull");
-}
+
+
+
+

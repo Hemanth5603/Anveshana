@@ -1,10 +1,16 @@
-import 'package:anveshana/screens/auth_screens/auth_start.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:anveshana/screens/Auth/otp.dart';
+import 'package:anveshana/screens/Auth/signup.dart';
+import 'package:anveshana/screens/SplashScreen.dart';
 import 'package:anveshana/screens/homepage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'assets/images/img_paths.dart';
 // import 'package:anveshana/screens/homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
+import 'controllers/navigation_controller.dart';
 import 'firebase_options.dart';
 
 Future main() async{
@@ -16,29 +22,69 @@ Future main() async{
   runApp(MyApp());
 }
 
+
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-    //purna
-      // This widget is the root of your application.
+  MyApp({super.key});
+
+
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    if (auth.currentUser != null) {
+      return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          'phone': (context) => PhoneAuthScreen(),
+          //'otp':(context) => OtpScreen(),
+          'home':(context) => HomePage(),
+          'navigator':(context) =>Navigation(),
+        },
+        theme: ThemeData(
+
+          primarySwatch: Colors.blue,
+        ),
+        home: HomePage(),
+      );
+    } else {
+      return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          'phone': (context) => PhoneAuthScreen(),
+          //'otp':(context) => OtpScreen(),
+          'home':(context) => HomePage(),
+          'navigator':(context) =>Navigation(),
+        },
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: PhoneAuthScreen(),
+      );
+    }
+
+
+    /*return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      //initialRoute: 'home',
+      routes: {
+        'phone': (context) => PhoneAuthScreen(),
+        'otp':(context) => OtpScreen(),
+        'home':(context) => HomePage(),
+        'navigator':(context) =>Navigation(),
+
+      },
+
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        // Sadiq
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r"hi in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
+
         primarySwatch: Colors.blue,
       ),
-      home:  HomePage(),
-    );
+      home: SplashScreen(),
+    );*/
   }
 }
+
+
 
