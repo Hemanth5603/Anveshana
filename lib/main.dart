@@ -3,6 +3,7 @@ import 'package:anveshana/screens/Auth/otp.dart';
 import 'package:anveshana/screens/Auth/signup.dart';
 import 'package:anveshana/screens/SplashScreen.dart';
 import 'package:anveshana/screens/homepage.dart';
+import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'assets/images/img_paths.dart';
@@ -13,8 +14,13 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'controllers/navigation_controller.dart';
 import 'firebase_options.dart';
 
+
+late List<CameraDescription> cameras;
+
+
 Future main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
   await Firebase.initializeApp(
     options:DefaultFirebaseOptions.currentPlatform,
   );
