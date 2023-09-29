@@ -1,4 +1,4 @@
-# anveshana
+# SnapPost
 
 A new Flutter project.
 
